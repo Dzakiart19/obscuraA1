@@ -420,20 +420,44 @@ def api_scrape():
     args += urls
 
     result = run_obscura(args, timeout=90)
-    if not result["success"] and not result["stdout"]:
+    stdout = result["stdout"].strip()
+
+    if not stdout and not result["success"]:
         return jsonify({"success": False, "error": result["stderr"] or "Scraping gagal."})
 
-    results = []
-    for line in result["stdout"].strip().splitlines():
-        line = line.strip()
-        if not line: continue
-        try:
-            results.append(json.loads(line))
-        except Exception:
-            pass
+    # Binary outputs a single JSON object: {"results": [...], ...}
+    # Attempt to parse it directly; fall back to NDJSON for older builds.
+    raw_results = []
+    try:
+        parsed = json.loads(stdout)
+        if isinstance(parsed, dict) and "results" in parsed:
+            raw_results = parsed["results"]
+        elif isinstance(parsed, list):
+            raw_results = parsed
+    except Exception:
+        for line in stdout.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                raw_results.append(json.loads(line))
+            except Exception:
+                pass
 
-    if not results:
+    if not raw_results:
         return jsonify({"success": False, "error": "Tidak ada hasil. " + (result["stderr"] or "")})
+
+    # Normalise each item to {url, result, error} that the UI expects
+    results = []
+    for item in raw_results:
+        if not isinstance(item, dict):
+            continue
+        url_val   = item.get("url", "")
+        err_val   = item.get("error") or None
+        # Prefer content > text > title as the displayable result
+        content   = item.get("content") or item.get("text") or item.get("title") or ""
+        results.append({"url": url_val, "result": content, "error": err_val})
+
     return jsonify({"success": True, "results": results})
 
 
