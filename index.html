@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Mekanik Teknik</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f6f7;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        p.subtitle { opacity: 0.9; font-size: 1rem; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-3px); }
+
+        .card h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { background: #2980b9; }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; }
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🛠️ Kalkulator Mekanik Teknik</h1>
+    <p class="subtitle">Alat bantu perhitungan cepat untuk konversi satuan, torsi, roda gigi, dan kekuatan material</p>
+</header>
+
+<div class="container">
+    <!-- Konversi Satuan -->
+    <div class="card">
+        <h2>📏 Konversi Satuan</h2>
+        <div class="form-group">
+            <label>Kategori</label>
+            <select id="convCategory" onchange="updateUnits()">
+                <option value="length">Panjang</option>
+                <option value="mass">Massa</option>
+                <option value="pressure">Tekanan</option>
+                <option value="temperature">Suhu</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Nilai</label>
+            <input type="number" id="convValue" placeholder="Masukkan angka">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+                <label>Dari</label>
+                <select id="convFrom"></select>
+            </div>
+            <div class="form-group">
+                <label>Ke</label>
+                <select id="convTo"></select>
+            </div>
+        </div>
+        <button onclick="calculateConversion()">Konversi</button>
+        <div class="result-box" id="convResult">-</div>
+    </div>
+
+    <!-- Torsi & Daya -->
+    <div class="card">
+        <h2>⚙️ Torsi & Daya</h2>
+        <div class="form-group">
+            <label>Daya (HP)</label>
+            <input type="number" id="torqueHp" placeholder="Horsepower">
+        </div>
+        <div class="form-group">
+            <label>RPM</label>
+            <input type="number" id="torqueRpm" placeholder="Putaran per menit">
+        </div>
+        <button onclick="calculateTorque()">Hitung Torsi (Nm)</button>
+        <div class="result-box" id="torqueResult">-</div>
+        <p style="font-size: 0.8rem; margin-top: 10px; color: #666;">Rumus: T(Nm) = (HP × 5252) / RPM × 1.3558</p>
+    </div>
+
+    <!-- Rasio Roda Gigi -->
+    <div class="card">
+        <h2>🔩 Rasio Roda Gigi</h2>
+        <div class="form-group">
+            <label>Jumlah Gigi Penggerak (Input)</label>
+            <input type="number" id="gearInput" placeholder="Z1">
+        </div>
+        <div class="form-group">
+            <label>Jumlah Gigi Digerakkan (Output)</label>
+            <input type="number" id="gearOutput" placeholder="Z2">
+        </div>
+        <div class="form-group">
+            <label>RPM Input</label>
+            <input type="number" id="gearRpmIn" placeholder="RPM Masuk">
+        </div>
+        <button onclick="calculateGear()">Hitung Rasio & RPM Output</button>
+        <div class="result-box" id="gearResult">-</div>
+    </div>
+
+    <!-- Stress / Strain -->
+    <div class="card">
+        <h2>🧱 Tegangan (Stress)</h2>
+        <div class="form-group">
+            <label>Gaya / Load (N)</label>
+            <input type="number" id="stressForce" placeholder="Newton">
+        </div>
+        <div class="form-group">
+            <label>Luas Penampang (mm²)</label>
+            <input type="number" id="stressArea" placeholder="Milimeter persegi">
+        </div>
+        <button onclick="calculateStress()">Hitung Tegangan (MPa)</button>
+        <div class="result-box" id="stressResult">-</div>
+        <p style="font-size: 0.8rem; margin-top: 10px; color: #666;">σ = F / A</p>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2026 Kalkulator Mekanik Teknik | Dibuat oleh Dzeck Agent</p>
+</footer>
+
+<script>
+    const units = {
+        length: { m: 1, km: 0.001, cm: 100, mm: 1000, inch: 39.3701, ft: 3.28084 },
+        mass: { kg: 1, g: 1000, lb: 2.20462, oz: 35.274, ton: 0.001 },
+        pressure: { Pa: 1, kPa: 0.001, bar: 0.00001, psi: 0.000145038, atm: 0.00000986923 },
+        temperature: ['C', 'F', 'K']
+    };
+
+    function updateUnits() {
+        const cat = document.getElementById('convCategory').value;
+        const fromSel = document.getElementById('convFrom');
+        const toSel = document.getElementById('convTo');
+        fromSel.innerHTML = '';
+        toSel.innerHTML = '';
+
+        if (cat === 'temperature') {
+            units.temperature.forEach(u => {
+                fromSel.add(new Option(u, u));
+                toSel.add(new Option(u, u));
+            });
+            toSel.selectedIndex = 1;
+        } else {
+            Object.keys(units[cat]).forEach(u => {
+                fromSel.add(new Option(u, u));
+                toSel.add(new Option(u, u));
+            });
+            toSel.selectedIndex = 1;
+        }
+    }
+
+    function calculateConversion() {
+        const cat = document.getElementById('convCategory').value;
+        const val = parseFloat(document.getElementById('convValue').value);
+        const from = document.getElementById('convFrom').value;
+        const to = document.getElementById('convTo').value;
+        const resBox = document.getElementById('convResult');
+
+        if (isNaN(val)) { resBox.innerText = "Masukkan nilai valid"; return; }
+
+        let result;
+        if (cat === 'temperature') {
+            let celsius;
+            if (from === 'C') celsius = val;
+            else if (from === 'F') celsius = (val - 32) * 5/9;
+            else celsius = val - 273.15;
+
+            if (to === 'C') result = celsius;
+            else if (to === 'F') result = celsius * 9/5 + 32;
+            else result = celsius + 273.15;
+        } else {
+            const base = val / units[cat][from];
+            result = base * units[cat][to];
+        }
+        resBox.innerText = `${val} ${from} = ${parseFloat(result.toFixed(4))} ${to}`;
+    }
+
+    function calculateTorque() {
+        const hp = parseFloat(document.getElementById('torqueHp').value);
+        const rpm = parseFloat(document.getElementById('torqueRpm').value);
+        const resBox = document.getElementById('torqueResult');
+        if (!hp || !rpm || rpm === 0) { resBox.innerText = "Masukkan HP dan RPM valid"; return; }
+        const torqueNm = (hp * 5252 / rpm) * 1.3558;
+        resBox.innerText = `Torsi: ${torqueNm.toFixed(2)} Nm`;
+    }
+
+    function calculateGear() {
+        const z1 = parseFloat(document.getElementById('gearInput').value);
+        const z2 = parseFloat(document.getElementById('gearOutput').value);
+        const rpmIn = parseFloat(document.getElementById('gearRpmIn').value);
+        const resBox = document.getElementById('gearResult');
+        if (!z1 || !z2 || !rpmIn || z1 === 0) { resBox.innerText = "Lengkapi semua data"; return; }
+        const ratio = z2 / z1;
+        const rpmOut = rpmIn / ratio;
+        resBox.innerHTML = `Rasio: ${ratio.toFixed(3)}<br>RPM Output: ${rpmOut.toFixed(1)}`;
+    }
+
+    function calculateStress() {
+        const f = parseFloat(document.getElementById('stressForce').value);
+        const a = parseFloat(document.getElementById('stressArea').value);
+        const resBox = document.getElementById('stressResult');
+        if (!f || !a || a === 0) { resBox.innerText = "Masukkan Gaya dan Luas valid"; return; }
+        const stress = f / a; // N/mm² = MPa
+        resBox.innerText = `Tegangan: ${stress.toFixed(2)} MPa`;
+    }
+
+    // Initialize units on load
+    updateUnits();
+</script>
+
+</body>
+</html>
