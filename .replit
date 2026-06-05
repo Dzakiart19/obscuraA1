@@ -55,6 +55,7 @@ externalPort = 80
 [userenv.shared]
 AI_BASE_URL = "https://divine-vittoria-dzeckyete-d2996f6e.koyeb.app"
 AI_MODEL = "qwen3.7-max"
+AI_API_KEY = "sk-dzcxD0fX_1KRv5poamonBzwAQM3mQnhTo9ftzylTGoFfczPA"
 
 [deployment]
 deploymentTarget = "autoscale"
