@@ -691,7 +691,7 @@
       </div>`;
     block.insertBefore(ph, thinking);
     currentPhase=ph.querySelector('.mns-actions');
-    if (thinking) thinking.querySelector('span').textContent='Melanjutkan...';
+    if (thinking) thinking.style.display='none';
     wrap.scrollTop=wrap.scrollHeight;
   }
 
