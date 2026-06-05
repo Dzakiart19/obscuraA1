@@ -820,6 +820,7 @@
       }
       const reader=res.body.getReader(); const decoder=new TextDecoder(); let buffer='';
       const stepResults={};
+      const pendingFiles=[];
 
       while(true) {
         const {value,done}=await reader.read(); if(done) break;
@@ -837,9 +838,10 @@
               stepResults[evt.icon]=evt.text;
             }
           } else if (evt.type==='file_created') {
-            addFileChip(block, evt.path, evt.name);
+            pendingFiles.push({path:evt.path, name:evt.name});
           } else if (evt.type==='done') {
             finalizeBlock(block, evt.reply||'');
+            pendingFiles.forEach(f=>addFileChip(block, f.path, f.name));
             chatHistory=evt.messages||[];
           } else if (evt.type==='error') {
             showError(block, evt.error);
